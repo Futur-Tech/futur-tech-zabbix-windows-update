@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2021-07-07T18:34:54Z</date>
+    <date>2021-07-08T08:17:38Z</date>
     <groups>
         <group>
             <name>Templates/Futur-Tech/Modules Windows</name>
@@ -24,7 +24,7 @@
             </applications>
             <items>
                 <item>
-                    <name>Windows Updates install</name>
+                    <name>Updates Install</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastInstallationSuccessDate) -UFormat %s]</key>
                     <delay>30m</delay>
@@ -45,14 +45,14 @@
                             <dependencies>
                                 <dependency>
                                     <name>Host has been rebooted to install Windows Updates in the last 36h</name>
-                                    <expression>{Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].regexp(True,36h)}=1 and {Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].last()}=&quot;False&quot;</expression>
+                                    <expression>{Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].regexp(True,36h)}=1 and {Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].last()}=&quot;False&quot; and {Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastInstallationSuccessDate) -UFormat %s].now()}&lt;&gt;0</expression>
                                 </dependency>
                             </dependencies>
                         </trigger>
                     </triggers>
                 </item>
                 <item>
-                    <name>Windows Updates search</name>
+                    <name>Updates Search</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastSearchSuccessDate) -UFormat %s]</key>
                     <delay>30m</delay>
@@ -80,12 +80,6 @@
                     </applications>
                     <triggers>
                         <trigger>
-                            <expression>{regexp(True,36h)}=1 and {last()}=&quot;False&quot;</expression>
-                            <name>Host has been rebooted to install Windows Updates in the last 36h</name>
-                            <priority>WARNING</priority>
-                            <manual_close>YES</manual_close>
-                        </trigger>
-                        <trigger>
                             <expression>{last()}=&quot;True&quot;</expression>
                             <name>Reboot required by Windows Updates</name>
                             <priority>HIGH</priority>
@@ -95,4 +89,13 @@
             </items>
         </template>
     </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].regexp(True,36h)}=1 and {Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired].last()}=&quot;False&quot; and {Template Futur-Tech Module Windows Updates:system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastInstallationSuccessDate) -UFormat %s].now()}&lt;&gt;0</expression>
+            <name>Host has been rebooted to install Windows Updates in the last 36h</name>
+            <opdata>Last install date: {ITEM.LASTVALUE3}</opdata>
+            <priority>WARNING</priority>
+            <manual_close>YES</manual_close>
+        </trigger>
+    </triggers>
 </zabbix_export>
