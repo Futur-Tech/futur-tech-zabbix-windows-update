@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2021-07-15T07:57:05Z</date>
+    <date>2021-07-15T08:10:36Z</date>
     <groups>
         <group>
             <name>Templates/Futur-Tech/Modules Windows</name>
@@ -36,9 +36,15 @@
                             <name>Windows Updates</name>
                         </application>
                     </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>3h</params>
+                        </step>
+                    </preprocessing>
                     <triggers>
                         <trigger>
-                            <expression>{now()} - {last()} &lt; {$WIN_UPDATES.TRIGGERS.TIMEOUT}</expression>
+                            <expression>({now()} - {last()} &lt; {$WIN_UPDATES.TRIGGERS.TIMEOUT}) and {$WIN_UPDATES.TRIGGERS.INFO} &lt;&gt; 0</expression>
                             <name>New Windows Updates installed in the last {$WIN_UPDATES.TRIGGERS.TIMEOUT}</name>
                             <opdata>Last install date: {ITEM.LASTVALUE}</opdata>
                             <priority>INFO</priority>
@@ -64,6 +70,12 @@
                             <name>Windows Updates</name>
                         </application>
                     </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>3h</params>
+                        </step>
+                    </preprocessing>
                 </item>
                 <item>
                     <name>Reboot Required</name>
