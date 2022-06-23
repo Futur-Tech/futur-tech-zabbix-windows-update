@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2022-02-11T09:01:41Z</date>
+    <date>2022-06-23T22:45:39Z</date>
     <groups>
         <group>
             <name>Templates/Futur-Tech/Modules Windows</name>
@@ -39,7 +39,7 @@
                     <preprocessing>
                         <step>
                             <type>DISCARD_UNCHANGED_HEARTBEAT</type>
-                            <params>3h</params>
+                            <params>1d</params>
                         </step>
                     </preprocessing>
                     <triggers>
@@ -73,7 +73,7 @@
                     <preprocessing>
                         <step>
                             <type>DISCARD_UNCHANGED_HEARTBEAT</type>
-                            <params>3h</params>
+                            <params>1d</params>
                         </step>
                     </preprocessing>
                 </item>
@@ -90,6 +90,12 @@
                             <name>Windows Updates</name>
                         </application>
                     </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>1d</params>
+                        </step>
+                    </preprocessing>
                     <triggers>
                         <trigger>
                             <expression>{last()}=&quot;True&quot;</expression>
