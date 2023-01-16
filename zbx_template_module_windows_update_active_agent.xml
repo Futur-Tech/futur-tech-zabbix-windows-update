@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2022-06-23T22:45:39Z</date>
+    <date>2023-01-16T00:12:18Z</date>
     <groups>
         <group>
             <name>Templates/Futur-Tech/Modules Windows</name>
@@ -27,7 +27,7 @@
                     <name>Updates Install</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastInstallationSuccessDate) -UFormat %s]</key>
-                    <delay>30m</delay>
+                    <delay>2h</delay>
                     <trends>0</trends>
                     <units>unixtime</units>
                     <description>Date when Windows Updates were last installed</description>
@@ -61,7 +61,7 @@
                     <name>Updates Search</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com &quot;Microsoft.Update.AutoUpdate&quot;).Results.LastSearchSuccessDate) -UFormat %s]</key>
-                    <delay>30m</delay>
+                    <delay>2h</delay>
                     <trends>0</trends>
                     <units>unixtime</units>
                     <description>Date when Windows Updates were last searched</description>
@@ -81,7 +81,7 @@
                     <name>Reboot Required</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\'Auto Update'\RebootRequired]</key>
-                    <delay>15m</delay>
+                    <delay>1h</delay>
                     <trends>0</trends>
                     <value_type>TEXT</value_type>
                     <description>Check if reboot is required for installing update(s)</description>
