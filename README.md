@@ -1,7 +1,7 @@
 # Zabbix Windows Update Monitoring
 Zabbix template for checking if there are some updates to apply.
 
-Works for Zabbix 5.x Active Agent
+Works for Zabbix 6.0 Active Agent
 
 ## Installation
 You need to allow remote commands for this template to work. No additional script need to be installed on the agent side.
