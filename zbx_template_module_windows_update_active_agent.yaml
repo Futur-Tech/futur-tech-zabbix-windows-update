@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2023-08-03T18:26:26Z'
+  date: '2023-09-14T15:36:06Z'
   groups:
     - uuid: 0c9841271ce24c7882314d02deb588c2
       name: 'Templates/Futur-Tech/Modules Windows'
@@ -13,20 +13,16 @@ zabbix_export:
         - name: 'Templates/Futur-Tech/Modules Windows'
       items:
         - uuid: 72641f5b8ee34fd183c24ae6d8fde3bf
-          name: 'Updates Install'
+          name: 'Windows Updates: last install'
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]'
           delay: 2h
           trends: '0'
-          units: unixtime
+          value_type: TEXT
           description: 'Date when Windows Updates were last installed'
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - 1d
           tags:
-            - tag: Application
-              value: 'Windows Updates'
+            - tag: component
+              value: updates
           triggers:
             - uuid: 048d66c3f8ed49bcabf069a26d5f3dd7
               expression: '(now() - last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]) < {$WIN_UPDATES.TRIGGERS.TIMEOUT}) and {$WIN_UPDATES.TRIGGERS.INFO} <> 0'
@@ -35,44 +31,32 @@ zabbix_export:
               priority: INFO
               dependencies:
                 - name: 'Host has been rebooted to install Windows Updates in the last {$WIN_UPDATES.TRIGGERS.TIMEOUT}'
-                  expression: 'find(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired],{$WIN_UPDATES.TRIGGERS.TIMEOUT},"regexp","True")=1 and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="False" and now()<>0'
+                  expression: 'find(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired],{$WIN_UPDATES.TRIGGERS.TIMEOUT},"regexp","True")=1 and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="False" and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s])<>0'
+                - name: 'Reboot required by Windows Updates'
+                  expression: 'last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="True"'
         - uuid: b4c7a3a562e649d68a96ee2727ffeb45
-          name: 'Updates Search'
+          name: 'Windows Updates: last search'
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastSearchSuccessDate) -UFormat %s]'
           delay: 2h
           trends: '0'
-          units: unixtime
+          value_type: TEXT
           description: 'Date when Windows Updates were last searched'
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - 1d
           tags:
-            - tag: Application
-              value: 'Windows Updates'
+            - tag: component
+              value: updates
         - uuid: 24d87566f8134d2c86f8a392d90bb5c8
-          name: 'Reboot Required'
+          name: 'Windows Updates: reboot required'
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired]'
           delay: 1h
           trends: '0'
           value_type: TEXT
           description: 'Check if reboot is required for installing update(s)'
-          preprocessing:
-            - type: DISCARD_UNCHANGED_HEARTBEAT
-              parameters:
-                - 1d
           tags:
-            - tag: Application
-              value: 'Windows Updates'
+            - tag: component
+              value: updates
           triggers:
-            - uuid: 2b4b0ea473224cdc9c80276c91f78b3b
-              expression: 'find(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired],{$WIN_UPDATES.TRIGGERS.TIMEOUT},"regexp","True")=1 and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="False" and now()<>0'
-              name: 'Host has been rebooted to install Windows Updates in the last {$WIN_UPDATES.TRIGGERS.TIMEOUT}'
-              opdata: 'Last install date: {ITEM.LASTVALUE3}'
-              priority: WARNING
-              manual_close: 'YES'
             - uuid: 430bf2d38c4a4046afd1b3e8bc33da4e
               expression: 'last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="True"'
               name: 'Reboot required by Windows Updates'
@@ -81,8 +65,15 @@ zabbix_export:
         - tag: Futur-Tech
       macros:
         - macro: '{$WIN_UPDATES.TRIGGERS.INFO}'
-          value: '0'
+          value: '1'
           description: 'Do you want to show info triggers concerning Windows Update.'
         - macro: '{$WIN_UPDATES.TRIGGERS.TIMEOUT}'
           value: 36h
           description: 'What is the timeout for trigger concerning Windows Update.'
+  triggers:
+    - uuid: 2b4b0ea473224cdc9c80276c91f78b3b
+      expression: 'find(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired],{$WIN_UPDATES.TRIGGERS.TIMEOUT},"regexp","True")=1 and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="False" and last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s])<>0'
+      name: 'Host has been rebooted to install Windows Updates in the last {$WIN_UPDATES.TRIGGERS.TIMEOUT}'
+      opdata: 'Last install date: {ITEM.LASTVALUE3}'
+      priority: WARNING
+      manual_close: 'YES'
