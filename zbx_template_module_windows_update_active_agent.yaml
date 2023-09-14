@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2023-09-14T15:36:06Z'
+  date: '2023-09-14T15:39:23Z'
   groups:
     - uuid: 0c9841271ce24c7882314d02deb588c2
       name: 'Templates/Futur-Tech/Modules Windows'
@@ -13,7 +13,7 @@ zabbix_export:
         - name: 'Templates/Futur-Tech/Modules Windows'
       items:
         - uuid: 72641f5b8ee34fd183c24ae6d8fde3bf
-          name: 'Windows Updates: last install'
+          name: 'Windows Updates: install'
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]'
           delay: 2h
@@ -35,7 +35,7 @@ zabbix_export:
                 - name: 'Reboot required by Windows Updates'
                   expression: 'last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Test-Path HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\''Auto Update''\RebootRequired])="True"'
         - uuid: b4c7a3a562e649d68a96ee2727ffeb45
-          name: 'Windows Updates: last search'
+          name: 'Windows Updates: search'
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastSearchSuccessDate) -UFormat %s]'
           delay: 2h
