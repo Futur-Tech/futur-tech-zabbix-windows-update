@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2023-09-14T15:39:23Z'
+  date: '2023-09-14T16:15:12Z'
   groups:
     - uuid: 0c9841271ce24c7882314d02deb588c2
       name: 'Templates/Futur-Tech/Modules Windows'
@@ -17,15 +17,14 @@ zabbix_export:
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]'
           delay: 2h
-          trends: '0'
-          value_type: TEXT
+          units: unixtime
           description: 'Date when Windows Updates were last installed'
           tags:
             - tag: component
               value: updates
           triggers:
             - uuid: 048d66c3f8ed49bcabf069a26d5f3dd7
-              expression: '(now() - last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]) < {$WIN_UPDATES.TRIGGERS.TIMEOUT}) and {$WIN_UPDATES.TRIGGERS.INFO} <> 0'
+              expression: 'now() - last(/Futur-Tech Module Windows updates/system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastInstallationSuccessDate) -UFormat %s]) < {$WIN_UPDATES.TRIGGERS.TIMEOUT} and {$WIN_UPDATES.TRIGGERS.INFO} <> 0'
               name: 'New Windows Updates installed in the last {$WIN_UPDATES.TRIGGERS.TIMEOUT}'
               opdata: 'Last install date: {ITEM.LASTVALUE}'
               priority: INFO
@@ -39,8 +38,7 @@ zabbix_export:
           type: ZABBIX_ACTIVE
           key: 'system.run[powershell.exe -NoProfile -ExecutionPolicy Bypass -command Get-Date -Date ((New-Object -com "Microsoft.Update.AutoUpdate").Results.LastSearchSuccessDate) -UFormat %s]'
           delay: 2h
-          trends: '0'
-          value_type: TEXT
+          units: unixtime
           description: 'Date when Windows Updates were last searched'
           tags:
             - tag: component
